@@ -43,7 +43,17 @@ class Auth:
             Returns True if authentication is required for the given path,
             False if the path is in the excluded_paths list.
         """
-        return False
+
+        if path is None or not excluded_paths:
+            return True
+
+        normalized_path = path.rstrip('/')
+
+        for excluded in excluded_paths:
+            if normalized_path == excluded.rstrip('/'):
+                return False
+
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
