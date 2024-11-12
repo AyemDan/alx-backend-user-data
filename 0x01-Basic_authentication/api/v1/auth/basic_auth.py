@@ -21,10 +21,9 @@ Example:
     basic_auth = Basic_Auth() """
 
 from api.v1.auth.auth import Auth
-from api.v1.auth.basic_auth import Basic_Auth
 
 
-class Basic_Auth(Auth):
+class BasicAuth(Auth):
     """
     BasicAuth is a subclass of Auth for basic authentication.
     Currently, this class is empty and inherits directly from Auth.
