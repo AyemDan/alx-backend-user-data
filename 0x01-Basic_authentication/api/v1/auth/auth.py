@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+'''This module provides the `Auth` class, which defines methods for handling
+authentication-related tasks in a web application. It includes methods to
+check if authentication is required for a given path, retrieve an
+authorization header from a request, and get the current user based on the
+request.
+
+Classes:
+Auth:
+    A class that provides methods for authentication-related tasks.'''
+
+
 from typing import List, TypeVar
 from flask import request, jsonify, make_response
 
