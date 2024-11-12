@@ -4,6 +4,7 @@ Route module for the API
 """
 from os import getenv
 from api.v1.views import app_views
+from api.v1.auth.auth import Auth
 from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
 import os
@@ -12,6 +13,32 @@ import os
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+auth = None
+AUTH_TYPE = getenv("AUTH_TYPE")
+if AUTH_TYPE == "auth":
+    auth = Auth()
+
+
+@app.before_request
+def check_authentication():
+    """
+    Checks the authentication of the incoming request by verifying the
+    'Authorization' header.
+
+    Returns:
+        Response: A JSON response with an error message and a 401
+        status code if the authentication fails.
+    """
+    if auth is None:
+        pass
+    if not auth.require_auth(request.path, ['/api/v1/status/',
+                                            '/api/v1/unauthorized/',
+                                            '/api/v1/forbidden/']):
+        return
+    if auth.authorization_header(request) is None:
+        abort(401)
+    if auth.current_user(request) is None:
+        abort(403)
 
 
 @app.errorhandler(401)

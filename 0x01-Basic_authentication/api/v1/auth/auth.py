@@ -55,7 +55,7 @@ class Auth:
             False if the path is in the excluded_paths list.
         """
 
-        if path is None or not excluded_paths:
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
 
         normalized_path = path.rstrip('/')
@@ -81,7 +81,11 @@ class Auth:
             Returns None as the default authorization header,
             indicating no header is present.
         """
-        return None
+        if (request is None or request.headers is None
+           or 'Authorization' not in request.headers):
+            return None
+
+        return request.headers.get('Authorization')
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
