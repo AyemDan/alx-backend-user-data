@@ -25,7 +25,35 @@ from api.v1.auth.auth import Auth
 
 class BasicAuth(Auth):
     """
-    BasicAuth is a subclass of Auth for basic authentication.
-    Currently, this class is empty and inherits directly from Auth.
+    BasicAuth is a subclass of Auth for handling Basic Authentication.
     """
-    pass
+
+    def extract_base64_authorization_header(self,
+                                            authorization_header: str) -> str:
+        """
+        Extracts the Base64 part of the Authorization header for
+        Basic Authentication.
+
+        Parameters:
+        -----------
+        authorization_header : str
+            The Authorization header containing the Basic
+            authentication credentials.
+
+        Returns:
+        --------
+        str or None
+            The Base64 part of the Authorization header if it's valid,
+            otherwise returns None.
+        """
+        # Check if authorization_header is None or not a string
+        if (authorization_header is None or
+           not isinstance(authorization_header, str)):
+            return None
+
+        # Check if the header starts with "Basic "
+        if not authorization_header.startswith("Basic "):
+            return None
+
+        # Return the part after "Basic "
+        return authorization_header[len("Basic "):]
