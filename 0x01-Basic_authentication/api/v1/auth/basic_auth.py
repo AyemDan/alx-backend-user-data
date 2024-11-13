@@ -19,7 +19,7 @@ Usage:
 Example:
 
     basic_auth = Basic_Auth() """
-
+import base64
 from api.v1.auth.auth import Auth
 
 
@@ -57,3 +57,30 @@ class BasicAuth(Auth):
 
         # Return the part after "Basic "
         return authorization_header[len("Basic "):]
+
+    def decode_base64_authorization_header(
+         self, base64_authorization_header: str) -> str:
+        """
+        Decodes a Base64 string.
+
+        Parameters:
+        -----------
+        base64_authorization_header : str
+            A Base64-encoded string representing the authorization credentials.
+
+        Returns:
+        --------
+        str or None
+            The decoded UTF-8 string if valid, otherwise None.
+        """
+        # Check if base64_authorization_header is None or not a string
+        if base64_authorization_header is None or not isinstance(
+         base64_authorization_header, str):
+            return None
+
+        # Try to decode the Base64 string
+        try:
+            decoded_bytes = base64.b64decode(base64_authorization_header)
+            return decoded_bytes.decode("utf-8")
+        except (base64.binascii.Error, UnicodeDecodeError):
+            return None
