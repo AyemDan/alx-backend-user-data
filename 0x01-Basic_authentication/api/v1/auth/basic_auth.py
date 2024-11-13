@@ -111,6 +111,7 @@ class BasicAuth(Auth):
             return None, None
 
         # Split the string at the first occurrence of ':'
-        user_email, password = decoded_base64_authorization_header.split(':', 1)
+        split_header = decoded_base64_authorization_header.split(':', 1)
+        user_email, password = split_header
 
         return user_email, password
