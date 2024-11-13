@@ -20,7 +20,9 @@ Example:
 
     basic_auth = Basic_Auth() """
 import base64
+from typing import TypeVar
 from api.v1.auth.auth import Auth
+from models.user import User
 
 
 class BasicAuth(Auth):
@@ -115,3 +117,37 @@ class BasicAuth(Auth):
         user_email, password = split_header
 
         return user_email, password
+
+    def user_object_from_credentials(
+         self, user_email: str, password: str) -> TypeVar('User'):
+        """
+        Retrieves a user object based on the email and password.
+
+        Parameters:
+        -----------
+        user_email : str
+            The email address of the user.
+        password : str
+            The password of the user.
+
+        Returns:
+        --------
+        TypeVar('User') or None
+            A user object if the credentials are valid, otherwise None.
+        """
+        # Check if the email or password are None or empty
+        if (user_email is None or password is None or
+           not isinstance(user_email, str) or not isinstance(password, str)):
+            return None
+
+        # Check if the user exists in the database
+        try:
+            users = User.search({"email": user_email})
+            if not users or users == []:
+                return None
+            for user in users:
+                if user.is_valid_password(password):
+                    return user
+            return None
+        except Exception:
+            return None
