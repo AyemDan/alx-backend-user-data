@@ -27,12 +27,12 @@ def view_one_user(user_id: str = None) -> str:
     """
     if user_id is None:
         abort(404)
-    
+
     if user_id == "me":
         if request.current_user is None:
             abort(404)
-        return jsonify(request.current_user.to_json()), 200 
-    
+        return jsonify(request.current_user.to_json()), 200
+
     user = User.get(user_id)
     if not user:
         abort(404)
@@ -127,8 +127,38 @@ def update_user(user_id: str = None) -> str:
     user.save()
     return jsonify(user.to_json()), 200
 
+
 @app_views.route('/users/me', methods=['GET'], strict_slashes=False)
 def get_authenticated_user():
+    """
+    Endpoint to retrieve information about the currently authenticated user.
+
+    Route:
+    ------
+    GET /users/me
+
+    Behavior:
+    ---------
+    - If there is no authenticated user (i.e., `request.current_user` is None),
+      the server responds with a 403 Forbidden error.
+    - If an authenticated user is present, their details are returned as JSON.
+
+    Returns:
+    --------
+    - 403 Forbidden: If the user is not authenticated.
+    - 200 OK: If the user is authenticated, with a JSON response containing
+      the user's information.
+
+    Example Response (200):
+    ------------------------
+    {
+        "id": "123",
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        ...
+    }
+    """
     if request.current_user is None:
-        abort(403)  # Forbidden
+        abort(403)  # Forbidden if no authenticated user
+
     return jsonify(request.current_user.to_json()), 200
