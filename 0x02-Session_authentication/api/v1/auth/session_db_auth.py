@@ -23,12 +23,15 @@ class SessionDBAuth(SessionExpAuth):
         Returns:
             str: The created session ID.
         """
+        if not user_id:
+            return None
+
         session_id = super().create_session(user_id)
         if not session_id:
             return None
 
         user_session = UserSession(user_id=user_id, session_id=session_id)
-        user_session.save()  # Save to the database (file-based in this case)
+        user_session.save()  # Save to the database
         return session_id
 
     def user_id_for_session_id(self, session_id=None):
@@ -48,16 +51,17 @@ class SessionDBAuth(SessionExpAuth):
         if not user_sessions:
             return None
 
-        user_session = user_sessions[0]  # Assume session IDs are unique
+        user_session = user_sessions[0]
         if self.session_duration <= 0:
             return user_session.user_id
 
-        if 'created_at' not in user_session.to_dict():
+        created_at = user_session.created_at
+        if not created_at:
             return None
 
-        created_at = user_session.to_dict()['created_at']
         if created_at + timedelta(
            seconds=self.session_duration) < datetime.now():
+            user_session.remove()  # Remove expired session
             return None
 
         return user_session.user_id
