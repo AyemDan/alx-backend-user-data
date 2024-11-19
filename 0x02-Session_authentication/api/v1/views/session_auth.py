@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from flask import request, jsonify, make_response
 from models.user import User
