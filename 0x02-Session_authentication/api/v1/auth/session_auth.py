@@ -26,7 +26,7 @@ class SessionAuth(Auth):
         """
         if user_id is None or not isinstance(user_id, str):
             return None
-        
+
         # Generate a new session ID
         session_id = str(uuid.uuid4())
 
