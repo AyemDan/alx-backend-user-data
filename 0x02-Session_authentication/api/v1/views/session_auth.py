@@ -1,7 +1,6 @@
 import os
 from flask import request, jsonify, make_response
 from models.user import User
-from api.v1.app import auth
 from api.v1.views import app_views
 
 
