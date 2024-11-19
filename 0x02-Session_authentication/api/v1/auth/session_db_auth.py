@@ -31,8 +31,11 @@ class SessionDBAuth(SessionExpAuth):
             return None
 
         user_session = UserSession(user_id=user_id, session_id=session_id)
-        user_session.save()  # Save to the database
-        return session_id
+        if user_session:
+            user_session.save()  # Save to the database
+            return session_id
+
+        return
 
     def user_id_for_session_id(self, session_id=None):
         """
@@ -60,11 +63,11 @@ class SessionDBAuth(SessionExpAuth):
             return None
 
         if created_at + timedelta(
-        seconds=self.session_duration) < datetime.now():
+           seconds=self.session_duration) < datetime.now():
             user_session.remove()  # Remove expired session
-            return None
+            return user_session.user_id
 
-        return user_session.user_id
+        return None
 
     def destroy_session(self, request=None):
         """
