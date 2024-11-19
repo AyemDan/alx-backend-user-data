@@ -2,8 +2,9 @@
 """
 Route module for the API
 
-This module sets up the API's Flask application, including routes, authentication, 
-CORS settings, and error handlers. It supports multiple authentication types: 
+This module sets up the API's Flask application, including routes,
+authentication,
+CORS settings, and error handlers. It supports multiple authentication types:
 basic, session-based, and custom.
 """
 
@@ -30,23 +31,28 @@ elif AUTH_TYPE == "auth":
 elif AUTH_TYPE == "session_auth":
     auth = SessionAuth()
 
+
 @app.before_request
 def check_authentication():
     """
-    Authentication middleware that checks the authentication status of incoming requests.
+    Authentication middleware that checks the authentication status
+    of incoming requests.
 
     How it works:
     -------------
     - If `auth` is not set, all requests are allowed without checks.
     - Excluded paths (e.g., `/api/v1/status/`) do not require authentication.
-    - If both the `Authorization` header and session cookie are missing, a 401 Unauthorized is returned.
-    - If the user is not authenticated (via `auth.current_user`), a 403 Forbidden is returned.
+    - If both the `Authorization` header and session cookie are missing, a
+    401 Unauthorized is returned.
+    - If the user is not authenticated (via `auth.current_user`), a 403
+    Forbidden is returned.
     - If authenticated, the current user is set to `request.current_user`.
 
     Error Responses:
     ----------------
     - 401 Unauthorized: If authentication credentials are missing or invalid.
-    - 403 Forbidden: If authentication credentials are valid but the user is not allowed access.
+    - 403 Forbidden: If authentication credentials are valid but the user is
+    not allowed access.
     """
     if auth is None:
         return
@@ -63,6 +69,7 @@ def check_authentication():
 
     request.current_user = auth.current_user(request)
 
+
 @app.errorhandler(401)
 def unauthorized(error) -> str:
     """
@@ -76,6 +83,7 @@ def unauthorized(error) -> str:
     }
     """
     return jsonify({"error": "Unauthorized"}), 401
+
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
@@ -91,6 +99,7 @@ def forbidden(error) -> str:
     """
     return jsonify({"error": "Forbidden"}), 403
 
+
 @app.errorhandler(404)
 def not_found(error) -> str:
     """
@@ -104,6 +113,7 @@ def not_found(error) -> str:
     }
     """
     return jsonify({"error": "Not found"}), 404
+
 
 if __name__ == "__main__":
     """
