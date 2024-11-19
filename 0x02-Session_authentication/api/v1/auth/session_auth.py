@@ -75,3 +75,30 @@ class SessionAuth(Auth):
 
         # Retrieve the User instance from the database using the user_id
         return User.get(user_id)
+
+    def destroy_session(self, request=None):
+        """
+        Deletes the user session (logs out the user).
+
+        Args:
+            request: Flask request object.
+
+        Returns:
+            bool: True if the session was successfully deleted,
+            False otherwise.
+        """
+        if request is None:
+            return False
+
+        # Retrieve the session ID from the cookie
+        session_id = self.session_cookie(request)
+        if session_id is None:
+            return False
+
+        # Check if the session ID is linked to a User ID
+        if session_id not in self.user_id_by_session_id:
+            return False
+
+        # Remove the session ID from the dictionary
+        del self.user_id_by_session_id[session_id]
+        return True

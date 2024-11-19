@@ -7,7 +7,7 @@ including session creation (login) and session destruction (logout).
 """
 
 import os
-from flask import request, jsonify, make_response
+from flask import request, jsonify, abort
 from models.user import User
 from api.v1.views import app_views
 
@@ -89,54 +89,17 @@ def login():
     return jsonify({"error": "wrong password"}), 401
 
 
-def destroy_session(self, request=None):
+@app_views.route('/auth_session/logout/', methods=['DELETE'],
+                 strict_slashes=False)
+def logout():
     """
-    Deletes the user session (logs out the user).
-
-    Behavior:
-    ---------
-    - Checks if a valid session ID is present in the request cookie.
-    - If the session ID exists and is linked to a user, it removes the session.
-
-    Args:
-    -----
-    request : Flask request object
-        The incoming request containing the session cookie.
+    Handles user logout by destroying the session.
 
     Returns:
-    --------
-    bool:
-        - True if the session was successfully deleted.
-        - False if the session ID is missing, invalid, or not linked to a user.
-
-    Example:
-    --------
-    - Session Cookie:
-        {
-            "SESSION_NAME": "session_id_123"
-        }
-
-    - Before Logout:
-        user_id_by_session_id = {
-            "session_id_123": "user_123"
-        }
-
-    - After Logout:
-        user_id_by_session_id = {}
-
+        Response: JSON response with an empty dictionary and status 200
+                if the session is successfully deleted.
     """
-    if request is None:
-        return False
-
-    # Retrieve the session ID from the cookie
-    session_id = self.session_cookie(request)
-    if session_id is None:
-        return False
-
-    # Check if the session ID is linked to a User ID
-    if session_id not in self.user_id_by_session_id:
-        return False
-
-    # Remove the session ID from the dictionary
-    del self.user_id_by_session_id[session_id]
-    return True
+    from api.v1.app import auth
+    if auth.destroy_session(request):
+        return jsonify({}), 200
+    abort(404)
