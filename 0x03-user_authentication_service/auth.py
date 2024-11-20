@@ -100,3 +100,54 @@ class Auth:
             usr = self._db.add_user(email, hashed)
             return usr
         raise ValueError(f"User {email} already exists")
+
+    def valid_login(self, email, password) -> bool:
+        """
+        Validates the login credentials (email and password) against the
+        stored user data.
+
+        This method checks if the provided email exists in the database,
+        and if it does,
+        it verifies if the provided password matches the stored
+        hashed password.
+
+        Parameters:
+        -----------
+        email : str
+            The email of the user trying to log in.
+
+        password : str
+            The password provided by the user attempting to log in.
+
+        Returns:
+        --------
+        bool
+            Returns True if the email exists in the database and
+            the provided password
+            matches the stored hashed password. Returns False if
+            either the email doesn't
+            exist or the password is incorrect.
+
+        Exceptions:
+        -----------
+        NoResultFound:
+            If the provided email does not match any user in the database.
+
+        Example:
+        --------
+        >>> auth.valid_login("user@example.com", "securepassword")
+        True
+
+        >>> auth.valid_login("user@example.com", "wrongpassword")
+        False
+
+        >>> auth.valid_login("nonexistent@example.com", "password")
+        False
+     """
+        try:
+            user = self._db.find_user_by(email=email)
+            if user:
+                return bcrypt.checkpw(
+                    password.encode('utf-8'), user.hashed_password)
+        except NoResultFound:
+            return False
