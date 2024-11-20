@@ -107,7 +107,8 @@ def register_user():
     except Exception as e:
         # If user already exists (or other exception), handle it
         return jsonify({"message": "email already registered"}), 400
-    
+
+
 @app.route('/sessions', methods=['POST'])
 def login():
     """
@@ -126,48 +127,50 @@ def login():
     Returns:
     --------
     Response:
-        A JSON response with the user's email and a success message if login is successful.
+        A JSON response with the user's email and a success message if
+        login is successful.
         Sets a "session_id" cookie with the session ID.
         Returns 401 if the email or password is missing, invalid, or not found.
     """
     email = request.form.get('email')
     password = request.form.get('password')
-    
+
     if not email or not password:
         abort(401)
 
     try:
         user = AUTH._db.find_user_by(email=email)
-        if not AUTH.valid_login(email, password):
-            abort(401)
-    except NoResultFound as e:
-        print({str(e)})
+        if user:
+            if not AUTH.valid_login(email, password):
+                abort(401)
+        print(user)
+    except NoResultFound:
         # Handle user not found error
         abort(401, description="User not found")
-    except Exception as e:
-        # Handle any other unexpected errors
-        abort(500, description=f"An unexpected error occurred: {str(e)}")
 
     # Step 3: Create a session for the user
     session_id = AUTH.create_session(email)
-    
+
     # Step 4: Set session ID as a cookie in the response
     response = make_response(jsonify({"email": email, "message": "logged in"}))
     response.set_cookie("session_id", session_id)
 
     return response
 
+
 @app.route('/sessions', methods=['DELETE'])
 def logout():
     """
-    Handles the DELETE /sessions route to log out a user by invalidating their session.
+    Handles the DELETE /sessions route to log out a user by
+    invalidating their session.
 
     Workflow:
     ---------
     1. Retrieve the session ID from cookies.
     2. Verify that the session ID exists.
     3. Look up the user associated with the session ID.
-    4. If the session ID is invalid or no user is associated, respond with a 403 status code.
+    4. If the session ID is invalid or no user is associated,
+    respond with a 403 status code.
     5. If valid, destroy the user's session.
     6. Redirect the user to the homepage.
 
@@ -197,6 +200,7 @@ def logout():
 
     # Step 6: Redirect the user to the homepage
     return redirect('/')
+
 
 @app.route('/profile', methods=['GET'])
 def profile():

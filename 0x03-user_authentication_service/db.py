@@ -11,6 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm import scoped_session
+
 from user import Base, User
 
 
@@ -49,7 +51,9 @@ class DB:
         (or drops it and
         recreates it), and sets up a session.
         """
-        self._engine = create_engine("sqlite:///a.db", echo=False)
+        self._engine = create_engine("sqlite:///a.db",
+                                     echo=False,
+                                     connect_args={"check_same_thread": False})
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -68,7 +72,7 @@ class DB:
             The session object to interact with the database.
         """
         if self.__session is None:
-            DBSession = sessionmaker(bind=self._engine)
+            DBSession = scoped_session(sessionmaker(bind=self._engine))
             self.__session = DBSession()
         return self.__session
 
@@ -116,16 +120,14 @@ class DB:
 
         Closes the session after the query is executed.
         """
-        try:
-            user = self._session.query(User).filter_by(**kwargs).first()
-            if user is None:
-                raise NoResultFound
-            return user
-
-
-        except InvalidRequestError as e:
-            # Handle invalid query arguments
-            raise
+        all_users = self._session.query(User)
+        for k, v in kwargs.items():
+            if k not in User.__dict__:
+                raise InvalidRequestError
+            for usr in all_users:
+                if getattr(usr, k) == v:
+                    return usr
+        raise NoResultFound
 
     def update_user(self, user_id: Integer, **kwargs) -> None:
         """
