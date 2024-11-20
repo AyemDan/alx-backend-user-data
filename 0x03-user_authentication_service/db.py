@@ -5,7 +5,7 @@ It uses SQLAlchemy to handle database operations,
 including user creation and session management.
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import Integer, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
@@ -129,3 +129,15 @@ class DB:
         except InvalidRequestError as e:
             # Handle invalid query arguments
             raise e
+
+    def update_user(self, user_id: Integer, **kwargs) -> None:
+
+        user = self.find_user_by(id=user_id)
+        for k, value in kwargs.items():
+            if not hasattr(User, k):
+                raise ValueError
+            setattr(user, k, value)
+            self.__session.add(user)
+            self._session.commit()
+
+        return None
