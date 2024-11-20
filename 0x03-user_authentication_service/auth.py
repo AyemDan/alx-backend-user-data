@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+from typing import Optional
 import bcrypt
 from db import DB
+from user import User
 from sqlalchemy.orm.exc import NoResultFound
 
 
@@ -233,3 +235,43 @@ class Auth:
         except NoResultFound:
             # Handle the case when no user is found for the given email
             return None
+        
+    def get_user_from_session_id(self, session_id: Optional[str]) -> Optional[User]:
+        """
+        Get a user from a session ID.
+
+        Args:
+            session_id (str): The session ID to search for.
+
+        Returns:
+            User or None: The corresponding user, or None if no match.
+        """
+        if session_id is None:
+            return None
+
+        try:
+            # Query for a user with the given session_id
+            user = self._db.find_user_by(session_id=session_id)
+            return user
+        except Exception:  # NoResultFound or similar exceptions
+            return None
+
+    def destroy_session(self, user_id: int) -> None:
+        """
+        Destroy the session by setting the session ID to None.
+
+        Args:
+            user_id (int): The ID of the user whose session needs to be destroyed.
+
+        Returns:
+            None
+        """
+        try:
+            # Find the user by user_id
+            user = self._db.find_user_by(id=user_id)
+
+            # Update the user's session_id to None
+            self._db.update_user(user.id, session_id=None)
+        except Exception:
+            # Handle case where user is not found or other exceptions occur
+            pass
