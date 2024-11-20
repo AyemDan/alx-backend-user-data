@@ -230,6 +230,65 @@ def profile():
     return jsonify({"email": user.email}), 200
 
 
+@app.route('/reset_password', methods=['POST'])
+def get_reset_password_token():
+    """
+    Generates a reset password token for a given email address.
+    This function retrieves the email address from the request form data,
+    validates its presence, and then attempts to generate a reset password
+    token using the AUTH service. If the email is not provided or if the
+    token generation fails, it aborts the request with a 403 status code.
+    Returns:
+        Response: A JSON response containing the email and the reset token.
+    Raises:
+        403: If the email is not provided or if the token generation fails.
+    """
+    email = request.form.get('email')
+    if not email:
+        abort(403)
+
+    try:
+        token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        abort(403)
+
+    return jsonify({"email": email, "reset_token": token})
+
+
+@app.route('/reset_password', methods=['PUT'])
+def update_password():
+    """
+    Update the user's password using a reset token.
+    This function retrieves the email, new password, and reset token from the
+    request form. It validates the presence of these fields and attempts to
+    update the password using the provided reset token. If the reset token is
+    invalid, it aborts with a 403 status code.
+    Returns:
+        Response: A JSON response containing the email and a success message
+                  with a 200 status code if the password is
+                  updated successfully.
+    Raises:
+        HTTPException: If any of the required fields
+        (email, new_password, reset_token)
+                       are missing, it aborts with a 400 status code.
+        HTTPException: If the reset token is invalid,
+        it aborts with a 403 status code.
+    """
+    email = request.form.get('email')
+    new_password = request.form.get('new_password')
+    reset_token = request.form.get('reset_token')
+
+    if not email or not reset_token or not new_password:
+        abort(400, description="Missing required fields")
+
+    try:
+        AUTH.update_password(reset_token, new_password)
+    except ValueError:
+        abort(403, description="Invalid reset token")
+
+    return jsonify({"email": email, "message": "Password updated"}), 200
+
+
 if __name__ == "__main__":
     """
     Starts the Flask web server on host 0.0.0.0 and port 5000.
