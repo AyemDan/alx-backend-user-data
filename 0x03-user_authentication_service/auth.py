@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import uuid
 import bcrypt
 from db import DB
 from sqlalchemy.orm.exc import NoResultFound
@@ -143,7 +144,7 @@ class Auth:
 
         >>> auth.valid_login("nonexistent@example.com", "password")
         False
-     """
+        """
         try:
             user = self._db.find_user_by(email=email)
             if user:
@@ -151,3 +152,30 @@ class Auth:
                     password.encode('utf-8'), user.hashed_password)
         except NoResultFound:
             return False
+
+    def _generate_uuid(self) -> str:
+        """
+        Generate and return a new UUID (Universally Unique Identifier)
+        as a string.
+
+        This method uses the `uuid` module to generate a random
+        UUID and returns it as a string.
+
+        Returns:
+        --------
+        str
+            A string representation of a newly generated UUID.
+
+        Example:
+        --------
+        >>> _generate_uuid()
+        '123e4567-e89b-12d3-a456-426614174000'
+
+        Notes:
+        ------
+        - This UUID is generated using the `uuid4()` method,
+        which produces a random UUID.
+        - The generated UUID will be unique with a very high
+        probability.
+        """
+        return str(uuid.uuid4())
