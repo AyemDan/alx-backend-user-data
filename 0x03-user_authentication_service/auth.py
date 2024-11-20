@@ -244,8 +244,9 @@ class Auth:
         except NoResultFound:
             # Handle the case when no user is found for the given email
             return None
-        
-    def get_user_from_session_id(self, session_id: Optional[str]) -> Optional[User]:
+
+    def get_user_from_session_id(self,
+                                 session_id: Optional[str]) -> Optional[User]:
         """
         Get a user from a session ID.
 
@@ -270,7 +271,8 @@ class Auth:
         Destroy the session by setting the session ID to None.
 
         Args:
-            user_id (int): The ID of the user whose session needs to be destroyed.
+            user_id (int): The ID of the user whose session
+            needs to be destroyed.
 
         Returns:
             None
