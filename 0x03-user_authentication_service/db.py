@@ -122,16 +122,42 @@ class DB:
                 raise NoResultFound
             return user
 
-        # except NoResultFound as e:
-        #     # Handle case where no result is found
-        #     return "str(e)"  # Returns "Not found"
 
         except InvalidRequestError as e:
             # Handle invalid query arguments
-            raise e
+            raise
 
     def update_user(self, user_id: Integer, **kwargs) -> None:
+        """
+        Updates the attributes of a user in the database.
 
+        This method retrieves a user by their ID and updates
+        specified attributes
+        using the keyword arguments passed to the method.
+        It raises a ValueError if
+        an invalid attribute name is provided.
+
+        Parameters:
+        -----------
+        user_id : Integer
+            The ID of the user to be updated.
+
+        **kwargs : dict
+            Arbitrary keyword arguments where each key is the attribute name
+            to be updated and the value is the new value for that attribute.
+
+        Returns:
+        --------
+        None
+            This method does not return any value. It performs
+            the update in-place
+            in the database.
+
+        Raises:
+        -------
+        ValueError
+            If any attribute name in **kwargs does not exist on the User model.
+        """
         user = self.find_user_by(id=user_id)
         for k, value in kwargs.items():
             if not hasattr(User, k):
@@ -141,3 +167,5 @@ class DB:
             self._session.commit()
 
         return None
+
+
