@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Flaskapp
+
+Returns:
+    runscode : blahblah blah
+"""
 from flask import Flask, jsonify, request, abort, make_response, redirect
 from sqlalchemy.orm.exc import NoResultFound
 from auth import Auth

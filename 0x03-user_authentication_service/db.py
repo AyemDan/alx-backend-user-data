@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """DB module
 This module contains the `DB` class responsible for
 interacting with the database.
