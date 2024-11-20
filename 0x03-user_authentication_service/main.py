@@ -39,10 +39,8 @@ Constants:
     PASSWD (str): The initial password used for testing.
     NEW_PASSWD (str): The new password used for testing.
 """
-#!/usr/bin/env python3
-"""
-Main file
-"""
+
+
 import requests
 
 
@@ -60,7 +58,7 @@ def register_user(email: str, password: str) -> None:
     if resp.status_code == 200:
         assert (resp.json() == {"email": email, "message": "user created"})
     else:
-        assert(resp.status_code == 400)
+        assert (resp.status_code == 400)
         assert (resp.json() == {"message": "email already registered"})
 
 
@@ -85,7 +83,7 @@ def profile_unlogged() -> None:
         None
     """
     r = requests.get('http://127.0.0.1:5000/profile')
-    assert(r.status_code == 403)
+    assert (r.status_code == 403)
 
 
 def log_in(email: str, password: str) -> str:
@@ -100,7 +98,7 @@ def log_in(email: str, password: str) -> str:
     resp = requests.post('http://127.0.0.1:5000/sessions',
                          data={'email': email, 'password': password})
     assert (resp.status_code == 200)
-    assert(resp.json() == {"email": email, "message": "logged in"})
+    assert (resp.json() == {"email": email, "message": "logged in"})
     return resp.cookies['session_id']
 
 
@@ -115,7 +113,7 @@ def profile_logged(session_id: str) -> None:
     cookies = {'session_id': session_id}
     r = requests.get('http://127.0.0.1:5000/profile',
                      cookies=cookies)
-    assert(r.status_code == 200)
+    assert (r.status_code == 200)
 
 
 def log_out(session_id: str) -> None:
@@ -130,9 +128,9 @@ def log_out(session_id: str) -> None:
     r = requests.delete('http://127.0.0.1:5000/sessions',
                         cookies=cookies)
     if r.status_code == 302:
-        assert(r.url == 'http://127.0.0.1:5000/')
+        assert (r.url == 'http://127.0.0.1:5000/')
     else:
-        assert(r.status_code == 200)
+        assert (r.status_code == 200)
 
 
 def reset_password_token(email: str) -> str:
@@ -147,7 +145,7 @@ def reset_password_token(email: str) -> str:
                       data={'email': email})
     if r.status_code == 200:
         return r.json()['reset_token']
-    assert(r.status_code == 401)
+    assert (r.status_code == 401)
 
 
 def update_password(email: str, reset_token: str,
@@ -167,9 +165,9 @@ def update_password(email: str, reset_token: str,
     r = requests.put('http://127.0.0.1:5000/reset_password',
                      data=data)
     if r.status_code == 200:
-        assert(r.json() == {"email": email, "message": "Password updated"})
+        assert (r.json() == {"email": email, "message": "Password updated"})
     else:
-        assert(r.status_code == 403)
+        assert (r.status_code == 403)
 
 
 EMAIL = "guillaume@holberton.io"
