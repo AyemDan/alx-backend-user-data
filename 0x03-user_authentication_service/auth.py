@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import uuid
 import bcrypt
 from db import DB
 from sqlalchemy.orm.exc import NoResultFound
@@ -178,4 +177,56 @@ class Auth:
         - The generated UUID will be unique with a very high
         probability.
         """
+        import uuid
         return str(uuid.uuid4())
+    
+    def create_session(self, email: str) -> str:
+        """
+        Create a session for a user and return the session ID.
+
+        This method creates a new session for a user by generating a unique session ID
+        and associating it with the user's record in the database. The session ID is
+        returned as a string.
+
+        Parameters:
+        -----------
+        email : str
+            The email of the user for whom the session is being created.
+
+        Returns:
+        --------
+        str
+            The session ID that was created for the user.
+
+        Exceptions:
+        -----------
+        NoResultFound:
+            If the user with the provided email does not exist in the database.
+        
+        Example:
+        --------
+        >>> auth.create_session("user@example.com")
+        '123e4567-e89b-12d3-a456-426614174000'
+
+        Notes:
+        ------
+        - The session ID is generated using the `uuid4()` method, which produces a random UUID.
+        - The session ID is stored in the user's record in the database and is returned as a string.
+        """
+        try:
+            # Step 1: Find the user by email
+            user = self._db.find_user_by(email=email)
+            
+            # Step 2: Generate a new session ID (UUID)
+            session_id = self._generate_uuid()
+            
+            # Step 3: Store the session ID in the user's record
+            user.session_id = session_id
+            self._db.update_user(user.id, session_id=session_id)            
+
+            return session_id
+
+        except NoResultFound:
+            # Handle the case when no user is found for the given email
+            return None
+
