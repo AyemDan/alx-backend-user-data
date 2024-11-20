@@ -232,8 +232,8 @@ class Auth:
             # Step 1: Find the user by email
             user = self._db.find_user_by(email=email)
 
-            # Step 2: Generate a new session ID (UUID)
-            session_id = self._generate_uuid()
+            import uuid
+            session_id = str(uuid.uuid4())
 
             # Step 3: Store the session ID in the user's record
             user.session_id = session_id
