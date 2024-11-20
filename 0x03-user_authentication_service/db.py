@@ -7,6 +7,8 @@ including user creation and session management.
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import Base, User
@@ -94,5 +96,36 @@ class DB:
         new_user = User(email=email, hashed_password=hashed_password)
         self._session.add(new_user)
         self._session.commit()
-        self.__session.close()
         return new_user
+
+    def find_user_by(self, **kwargs) -> User:
+        """Find a user by the given keyword arguments
+
+        Searches for a user in the database based on the
+        provided keyword arguments.
+
+        Parameters:
+        -----------
+        **kwargs
+            Arbitrary keyword arguments to filter the user by.
+
+        Returns:
+        --------
+        User
+            The user object that matches the provided filters.
+
+        Closes the session after the query is executed.
+        """
+        try:
+            user = self._session.query(User).filter_by(**kwargs).first()
+            if user is None:
+                raise NoResultFound
+            return user
+
+        # except NoResultFound as e:
+        #     # Handle case where no result is found
+        #     return "str(e)"  # Returns "Not found"
+
+        except InvalidRequestError as e:
+            # Handle invalid query arguments
+            raise e
