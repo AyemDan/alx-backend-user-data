@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+""" This module provides authentication services, including user registration,
+login validation, session management, and password hashing.
+Classes:
+Auth:
+    A class to interact with the authentication database, handling user
+    registration, authentication, and password management.
+Functions:
+_hash_password(password: str) -> bytes: """
+
 from typing import Optional
 import bcrypt
 from db import DB
