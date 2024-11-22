@@ -6,7 +6,7 @@ It uses SQLAlchemy to handle database operations,
 including user creation and session management.
 """
 
-from sqlalchemy import Integer, create_engine
+from sqlalchemy import  create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
@@ -130,7 +130,7 @@ class DB:
                     return usr
         raise NoResultFound
 
-    def update_user(self, user_id: Integer, **kwargs) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """
         Updates the attributes of a user in the database.
 
