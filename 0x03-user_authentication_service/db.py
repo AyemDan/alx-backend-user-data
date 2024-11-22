@@ -5,8 +5,7 @@ interacting with the database.
 It uses SQLAlchemy to handle database operations,
 including user creation and session management.
 """
-
-from sqlalchemy import  create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
@@ -62,9 +61,12 @@ class DB:
     @property
     def _session(self) -> Session:
         """
-        Creates and returns a new SQLAlchemy session if one does not already exist.
-        This method checks if a session has already been created. If not, it creates
-        a new session using a scoped session factory bound to the engine. The session
+        Creates and returns a new SQLAlchemy session if one
+        does not already exist.
+        This method checks if a session has already been
+        created. If not, it creates
+        a new session using a scoped session factory bound
+        to the engine. The session
         is then stored in the instance variable `__session` and returned.
         Returns:
             Session: An SQLAlchemy session object.
