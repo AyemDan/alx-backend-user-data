@@ -68,7 +68,7 @@ class Auth:
         """
         self._db = DB()
 
-    def register_user(self, email: str, password: str):
+    def register_user(self, email: str, password: str) -> User:
         """
         Registers a new user by adding their email and hashed password
         to the database.
@@ -112,7 +112,7 @@ class Auth:
             return usr
         raise ValueError(f"User {email} already exists")
 
-    def valid_login(self, email, password) -> bool:
+    def valid_login(self, email: str, password: str) -> bool:
         """
         Validates the login credentials (email and password) against the
         stored user data.
