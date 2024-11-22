@@ -61,16 +61,13 @@ class DB:
 
     @property
     def _session(self) -> Session:
-        """Memoized session object
-
-        Returns a session object that is used for interacting
-        with the database.
-        If the session doesn't exist, it is created and stored.
-
+        """
+        Creates and returns a new SQLAlchemy session if one does not already exist.
+        This method checks if a session has already been created. If not, it creates
+        a new session using a scoped session factory bound to the engine. The session
+        is then stored in the instance variable `__session` and returned.
         Returns:
-        --------
-        sqlalchemy.orm.Session
-            The session object to interact with the database.
+            Session: An SQLAlchemy session object.
         """
         if self.__session is None:
             DBSession = scoped_session(sessionmaker(bind=self._engine))
