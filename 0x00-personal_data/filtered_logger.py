@@ -37,7 +37,7 @@ import logging
 import os
 import mysql.connector
 from typing import List
-from re import sub
+import re
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -58,7 +58,7 @@ def filter_datum(fields: List[str], redaction: str,
     """
 
     for field in fields:
-        message = sub(fr"{field}=.*?{separator}",
+        message = re.sub(fr"{field}=.*?{separator}",
                       f"{field}={redaction}{separator}", message)
     return message
 
